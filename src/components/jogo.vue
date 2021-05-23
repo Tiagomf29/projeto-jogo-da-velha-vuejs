@@ -1,6 +1,8 @@
 <template>
     <div>
-    <button> <img src="../assets/trava.png" alt="cadeado travado"/>Iniciar jogo</button>
+    <button v-if="varMudaImagem == 1"> <img src="@/assets/trava.png" alt="cadeado travado"/>Iniciar jogo</button>
+    <button v-else-if ="varMudaImagem == 2"><img src="@/assets/destrava.png" alt="cadeado destravado"/>Finalizar jogo</button>
+    <button v-else ><img src="@/assets/trava.png" alt="cadeado travado"/>Reiniciar jogo</button>
     <table id="tab">
         <tr>
             <td id="1" class="one"></td><td id="2" class="one"></td><td id="3" class="tres"></td>
@@ -23,7 +25,7 @@ export default {
     data() {
             return {
                 jogoAcabou : false,
-                variavelAtual : ""
+                varMudaImagem : 1
             }
     },
     methods:{        
@@ -31,12 +33,14 @@ export default {
             let cel = document.querySelectorAll("td");
             cel.forEach(vlr =>{
                     vlr.addEventListener('click', e => {
-                        console.log(e);
-                        if (this.exibeMarcacao(vlr.id)=="O"){
-                            document.getElementById(vlr.id).style.color = "red";
-                        }else{
-                            document.getElementById(vlr.id).style.color = "blue";
-                        }                           
+                        console.log(e); 
+                        if(this.varMudaImagem==2){                   
+                            if (this.exibeMarcacao(vlr.id, this.varMudaImagem)=="O"){
+                                document.getElementById(vlr.id).style.color = "red";
+                            }else{
+                                document.getElementById(vlr.id).style.color = "blue";
+                            }                       
+                        }
                         this.validaTermino();         
                     });
             });
@@ -44,36 +48,40 @@ export default {
         preparaInicioJogo:function(){
             let botao = document.querySelector("button");
             botao.addEventListener('click', e =>{  
+            this.mudaSatusBotao();
             if (!this.jogoAcabou){
-                console.log(e);
+                console.log(e);                 
                 this.iniciaJogo();
-                let img = document.querySelector("img");
-                img.src="src/assets/trava.png";
-                botao.style.backgroundColor = "yellow";
-                botao.innerHTML = '<img src="../assets/destrava.png" alt="cadeado travado"/>Reiniciar Jogo';
+                botao.style.backgroundColor = "yellow";                          
             }else{
                     this.reiniciarJogo();
                 }
             });
         },
-        exibeMarcacao:function(objeto){    
-            if(document.getElementById(objeto).innerHTML ==""){
-
-                if (!this.jogoAcabou){
-                    if (this.variavelAtual == "" || this.variavelAtual=="O"){ 
-                        let valor = document.getElementById(objeto);
-                        valor.innerHTML = "X";                               
-                        return this.variavelAtual = "X";
-                    }else{   
-                        let valor = document.getElementById(objeto);  
-                        valor.innerHTML = "O";                   
-                        return this.variavelAtual = "O";  
-                    }   
-                }else{
-                    alert("Jogo acabou!");
-                    return this.variavelAtual = "";
+        exibeMarcacao:function(objeto, statusBotao){
+            
+            if (statusBotao == 2 || statusBotao == 3){
+                if(statusBotao == 3) {
+                    this.varMudaImagem = 2;
                 }
-            }        
+                if(document.getElementById(objeto).innerHTML ==""){
+
+                    if (!this.jogoAcabou){
+                        if (this.variavelAtual == "" || this.variavelAtual=="O"){ 
+                            let valor = document.getElementById(objeto);
+                            valor.innerHTML = "X";                               
+                            return this.variavelAtual = "X";
+                        }else{   
+                            let valor = document.getElementById(objeto);  
+                            valor.innerHTML = "O";                   
+                            return this.variavelAtual = "O";  
+                        }   
+                    }else{
+                        alert("Jogo acabou!");
+                        return this.variavelAtual = "";                        
+                    }
+                }        
+            }
         },
         validaTermino:function(){
 
@@ -84,16 +92,16 @@ export default {
             }
 
             let dimH1 = (aJogo[1] == aJogo[2] && aJogo[1] == aJogo[3] && aJogo[1] !="");
-            if(dimH1)this.propriedades(0,150,280);        
+            if(dimH1)this.propriedades(0,175,280);        
             
             let dimH2 = (aJogo[4] == aJogo[5] && aJogo[4] == aJogo[6] && aJogo[4] !="");
-            if(dimH2)this.propriedades(0,330,280); 
+            if(dimH2)this.propriedades(0,358,280); 
 
             let dimH3 = (aJogo[7] == aJogo[8] && aJogo[7] == aJogo[9] && aJogo[7] !="");
-            if(dimH3)this.propriedades(0,515,280); 
+            if(dimH3)this.propriedades(0,545,280); 
 
             let dimV1 = (aJogo[1] == aJogo[4] && aJogo[1] == aJogo[7] && aJogo[1] !="");    
-            if(dimV1)this.propriedades(90,0,90);    
+            if(dimV1)this.propriedades(90,300,91);    
             
             let dimV2 = (aJogo[2] == aJogo[5] && aJogo[2] == aJogo[8] && aJogo[2] !="");
             if(dimV2)this.propriedades(90,0,272);   
@@ -102,10 +110,10 @@ export default {
             if(dimV3)this.propriedades(90,0,455); 
 
             let dimD1 = (aJogo[1] == aJogo[5] && aJogo[1] == aJogo[9] && aJogo[1] !="");
-            if(dimD1)this.propriedades(45,335,0); 
+            if(dimD1)this.propriedades(45,360,280); 
 
             let dimD2 = (aJogo[3] == aJogo[5] && aJogo[3] == aJogo[7] && aJogo[3] !="");
-            if(dimD2)this.propriedades(135,340,0);
+            if(dimD2)this.propriedades(135,360,280);
                 
 
         },
@@ -119,7 +127,8 @@ export default {
             if(left != 0){
                 objeto.style.left= left+"px";
             }
-            this.jogoAcabou = true;        
+            this.jogoAcabou = true; 
+            this.varMudaImagem = 3;       
         },
         reiniciarJogo:function(){
 
@@ -132,6 +141,20 @@ export default {
                 this.jogoAcabou = false;
             });
 
+        },
+        mudaSatusBotao:function(){
+
+            switch (this.varMudaImagem) {
+                case 1: this.varMudaImagem += this.varMudaImagem;                    
+                    break;                
+                case 2 : this.varMudaImagem = 1;                         
+                         this.reiniciarJogo();
+                    break;
+                case 3 : this.varMudaImagem = 2;
+                    break; 
+                                     
+            }
+                    
         }        
         
     }
@@ -144,6 +167,7 @@ export default {
         height: 180px;
         text-align: center;
         font-size: 100px;
+         border-color: black; 
     }
 
     table{
@@ -153,7 +177,7 @@ export default {
 
     .one{   
         border-bottom: 2px solid;
-        border-right: 2px solid;   
+        border-right: 2px solid;          
     }
 
     .dois{   
@@ -179,5 +203,5 @@ export default {
         border-radius: 15px;
         font-weight: bolder;
     }
-    
+
 </style>
